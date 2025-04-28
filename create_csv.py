@@ -12,7 +12,7 @@ def create_database():
     # Define the base URL and parameters
     base_url = "https://api.openalex.org/works"
     params = {
-        "filter": "locations.source.issn:0043-1397,publication_date:2020-01-01|2024-12-31",
+        "filter": "primary_location.source.issn:0043-1397,from_publication_date:2020-01-01,to_publication_date:2024-12-31",
         "per-page": 200,
         "cursor": "*"
     }
@@ -78,5 +78,5 @@ def save_csv(data):
     data.to_csv('water_resources_research_2020_2024.csv', index=False)
 
 
-if __name__ == "__main_":
-    main()
+
+main()
