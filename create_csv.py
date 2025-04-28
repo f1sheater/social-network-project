@@ -37,30 +37,32 @@ def create_database():
     references_list = []
 
     for work in results:
-        titles.append(work.get('title', ''))
+        title = work.get('title', '')
+        if title != None and title != "Issue Information" and title != "":
+            titles.append(work.get('title', ''))
 
-        authors = []
-        affiliations = []
-        for author in work.get('authorships', []):
-            authors.append(author.get('author', {}).get('display_name', ''))
-            
-            institutions = author.get('institutions', [])
-            if institutions:
-                affiliations.append(institutions[0].get('display_name', ''))
-            else:
-                affiliations.append('N/A')
+            authors = []
+            affiliations = []
+            for author in work.get('authorships', []):
+                authors.append(author.get('author', {}).get('display_name', ''))
+                
+                institutions = author.get('institutions', [])
+                if institutions:
+                    affiliations.append(institutions[0].get('display_name', ''))
+                else:
+                    affiliations.append('N/A')
 
-        authors_list.append(f'"{",".join(authors)}"')
-        affiliations_list.append(f'"{",".join(affiliations)}"')
+            authors_list.append(f'"{",".join(authors)}"')
+            affiliations_list.append(f'"{",".join(affiliations)}"')
 
-        # Extract keywords (concepts)
-        concepts = work.get('concepts', [])
-        keywords = [concept.get('display_name', '') for concept in concepts]
-        keywords_list.append(f'"{",".join(keywords)}"')
+            # Extract keywords (concepts)
+            concepts = work.get('concepts', [])
+            keywords = [concept.get('display_name', '') for concept in concepts]
+            keywords_list.append(f'"{",".join(keywords)}"')
 
-        # References (may be missing)
-        references = work.get('referenced_works', [])
-        references_list.append(f'"{"; ".join(references) if references else "N/A"}"')
+            # References (may be missing)
+            references = work.get('referenced_works', [])
+            references_list.append(f'"{"; ".join(references) if references else "N/A"}"')
 
     # Create DataFrame
     df = pd.DataFrame({
