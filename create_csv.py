@@ -31,6 +31,7 @@ def create_database():
             break
 
     titles = []
+    ids = []
     authors_list = []
     affiliations_list = []
     keywords_list = []
@@ -40,6 +41,7 @@ def create_database():
         title = work.get('title', '')
         if title != None and title != "Issue Information" and title != "":
             titles.append(work.get('title', ''))
+            ids.append(work.get('id', '').split('/')[-1])
 
             authors = []
             affiliations = []
@@ -62,11 +64,14 @@ def create_database():
 
             # References (may be missing)
             references = work.get('referenced_works', [])
-            references_list.append(f'"{"; ".join(references) if references else "N/A"}"')
+            for i, ref in enumerate(references):
+                references[i] = ref.split('/')[-1]
+            references_list.append(f'"{",".join(references) if references else "N/A"}"')
 
     # Create DataFrame
     df = pd.DataFrame({
         'Title': titles,
+        'Work ID': ids,
         'Authors': authors_list,
         'Affiliations': affiliations_list,
         'Keywords': keywords_list,

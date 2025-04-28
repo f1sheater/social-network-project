@@ -1,5 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import networkx as nx
+import numpy as np
+import requests
 from collections import Counter
 from collections import defaultdict
 
@@ -116,4 +119,91 @@ plt.ylabel('Number of Keywords')
 
 plt.grid(True)
 
+# Assume df is the DataFrame containing your paper data, with 'Title' and 'References' columns
+# df['Title'] contains paper titles
+# df['References'] contains a list of references (paper titles that this paper references)
+
+# Step 1: Create the Undirected Graph
+
+# Initialize an empty undirected graph
+G = nx.Graph()
+counter = 0
+
+# Add nodes (papers) and edges (references between papers)
+for index, row in database.iterrows():
+    id = row['Work ID']
+    print(id)
+    references = row['References'].strip('"').split(',')  # Assuming references are separated by semicolon
+
+    # Add the node for the paper
+    if id not in G:
+        counter += 1
+        print(counter)
+        G.add_node(id)
+
+    # For each reference, create an undirected edge (bidirectional link)
+    id_list = list(database["Work ID"])
+    for ref in references:
+        if ref in id_list:
+            if ref not in G:
+                G.add_node(ref)  # Ensure the referenced paper is in the graph
+            G.add_edge(id, ref)  # Paper -- Reference (undirected)
+            print("edge added")
+
+# Step 2: Compute Global Properties
+
+# Number of nodes (papers)
+num_nodes = G.number_of_nodes()
+print(num_nodes)
+
+# Number of edges (references)
+num_edges = G.number_of_edges()
+
+
+# Diameter (longest shortest path between any two nodes)
+# The diameter is only defined for connected graphs, so we will check if the graph is connected.
+# If not, we will use the largest connected component for diameter calculation.
+if nx.is_connected(G):
+    diameter = nx.diameter(G)
+    print("if")
+else:
+    # Find the largest connected component and compute diameter
+    largest_component = max(nx.connected_components(G), key=len)
+    print("comp got")
+    subgraph = G.subgraph(largest_component)
+    print(f"subgraph size: {subgraph.number_of_nodes()}")
+    diameter = nx.diameter(subgraph)
+    print("else")
+print("diameter")
+print(database["Work ID"])
+print(list(database["Work ID"]))
+
+# Clustering coefficient (average for the whole graph)
+avg_clustering_coefficient = nx.average_clustering(G)
+
+# Number of connected components (subgraphs)
+num_components = nx.number_connected_components(G)
+
+# Average degree (average number of edges per node)
+avg_degree = np.mean([d for n, d in G.degree()])
+
+# Standard deviation of degrees
+std_degree = np.std([d for n, d in G.degree()])
+
+# Step 3: Compile the results in a DataFrame
+graph_properties = pd.DataFrame({
+    'Number of Nodes': [num_nodes],
+    'Number of Edges': [num_edges],
+    'Diameter': [diameter],
+    'Average Clustering Coefficient': [avg_clustering_coefficient],
+    'Number of Components': [num_components],
+    'Average Degree': [avg_degree],
+    'Degree Standard Deviation': [std_degree]
+})
+
+# Display the properties
+print(graph_properties)
+
+plt.figure(figsize=(10, 10))
+nx.draw(subgraph, with_labels=True, node_size=50, font_size=8)
 plt.show()
