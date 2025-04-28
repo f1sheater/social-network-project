@@ -59,14 +59,23 @@ plt.grid(True)
 all_affiliations = []
 for affiliations in database['Affiliations']:
     affil_list = affiliations.strip('"').split(',')
-    for affil in affil_list:
+    affil_set = set(affil_list)
+    for affil in affil_set:
         if affil != "N/A":
             all_affiliations.append(affil)
 
+
 # Count publications per institution
 institution_publications = Counter(all_affiliations)
-
 publication_counts = list(institution_publications.values())
+
+# Turn into a DataFrame
+institution_publications_df = pd.DataFrame(institution_publications.items(), columns=['Author', 'Number_of_Publications'])
+
+# Sort descending
+institution_publications_df = institution_publications_df.sort_values(by='Number_of_Publications', ascending=False)
+
+print(institution_publications_df.head())
 
 # Plot histogram of publication counts
 plt.figure(figsize=(10,6))
@@ -86,9 +95,15 @@ for keywords in database['Keywords']:
 
 # Count how many times each keyword appears
 keyword_counts = Counter(all_keywords)
-
-# Extract keyword counts
 keyword_publications = list(keyword_counts.values())
+
+# Turn into a DataFrame
+keyword_counts_df = pd.DataFrame(keyword_counts.items(), columns=['Author', 'Number_of_Publications'])
+
+# Sort descending
+keyword_counts_df = keyword_counts_df.sort_values(by='Number_of_Publications', ascending=False)
+
+print(keyword_counts_df.head())
 
 # Plot histogram of keyword publication counts
 plt.figure(figsize=(10,6))
