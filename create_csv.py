@@ -4,69 +4,79 @@ import time
 from collections import Counter
 import matplotlib.pyplot as plt
 
-# Define the base URL and parameters
-base_url = "https://api.openalex.org/works"
-params = {
-    "filter": "locations.source.issn:0043-1397,publication_date:2020-01-01|2024-12-31",
-    "per-page": 200,
-    "cursor": "*"
-}
+def main():
+    database = create_database()
+    save_csv(database)
 
-# Initialize an empty list to store the results
-results = []
+def create_database():
+    # Define the base URL and parameters
+    base_url = "https://api.openalex.org/works"
+    params = {
+        "filter": "locations.source.issn:0043-1397,publication_date:2020-01-01|2024-12-31",
+        "per-page": 200,
+        "cursor": "*"
+    }
 
-while True:
-    response = requests.get(base_url, params=params)
-    print(response.status_code)
-    print(response.text)
-    data = response.json()
-    results.extend(data['results'])
-    if 'next_cursor' in data['meta'] and data['meta']['next_cursor']:
-        params['cursor'] = data['meta']['next_cursor']
-        time.sleep(1)  # To respect API rate limits
-    else:
-        break
+    # Initialize an empty list to store the results
+    results = []
 
-titles = []
-authors_list = []
-affiliations_list = []
-keywords_list = []
-references_list = []
-
-for work in results:
-    titles.append(work.get('title', ''))
-
-    authors = []
-    affiliations = []
-    for author in work.get('authorships', []):
-        authors.append(author.get('author', {}).get('display_name', ''))
-        
-        institutions = author.get('institutions', [])
-        if institutions:
-            affiliations.append(institutions[0].get('display_name', ''))
+    while True:
+        response = requests.get(base_url, params=params)
+        data = response.json()
+        results.extend(data['results'])
+        if 'next_cursor' in data['meta'] and data['meta']['next_cursor']:
+            params['cursor'] = data['meta']['next_cursor']
+            time.sleep(1)  # To respect API rate limits
         else:
-            affiliations.append('N/A')
+            break
 
-    authors_list.append(f'"{",".join(authors)}"')
-    affiliations_list.append(f'"{",".join(affiliations)}"')
+    titles = []
+    authors_list = []
+    affiliations_list = []
+    keywords_list = []
+    references_list = []
 
-    # Extract keywords (concepts)
-    concepts = work.get('concepts', [])
-    keywords = [concept.get('display_name', '') for concept in concepts]
-    keywords_list.append(f'"{",".join(keywords)}"')
+    for work in results:
+        titles.append(work.get('title', ''))
 
-    # References (may be missing)
-    references = work.get('referenced_works', [])
-    references_list.append(f'"{"; ".join(references) if references else "N/A"}"')
+        authors = []
+        affiliations = []
+        for author in work.get('authorships', []):
+            authors.append(author.get('author', {}).get('display_name', ''))
+            
+            institutions = author.get('institutions', [])
+            if institutions:
+                affiliations.append(institutions[0].get('display_name', ''))
+            else:
+                affiliations.append('N/A')
 
-# Create DataFrame
-df = pd.DataFrame({
-    'Title': titles,
-    'Authors': authors_list,
-    'Affiliations': affiliations_list,
-    'Keywords': keywords_list,
-    'References': references_list
-})
+        authors_list.append(f'"{",".join(authors)}"')
+        affiliations_list.append(f'"{",".join(affiliations)}"')
 
-# Save to CSV
-df.to_csv('water_resources_research_2020_2024.csv', index=False)
+        # Extract keywords (concepts)
+        concepts = work.get('concepts', [])
+        keywords = [concept.get('display_name', '') for concept in concepts]
+        keywords_list.append(f'"{",".join(keywords)}"')
+
+        # References (may be missing)
+        references = work.get('referenced_works', [])
+        references_list.append(f'"{"; ".join(references) if references else "N/A"}"')
+
+    # Create DataFrame
+    df = pd.DataFrame({
+        'Title': titles,
+        'Authors': authors_list,
+        'Affiliations': affiliations_list,
+        'Keywords': keywords_list,
+        'References': references_list
+    })
+
+    return df
+
+def save_csv(data):
+    # Save to CSV
+    data.to_csv('water_resources_research_2020_2024.csv', index=False)
+
+
+if __name__ == "__main_":
+    main()
