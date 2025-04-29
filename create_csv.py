@@ -84,6 +84,6 @@ def save_csv(data):
     # Save to CSV
     data.to_csv('water_resources_research_2020_2024.csv', index=False)
 
-
-
+print("Creating database...")
 main()
+print("Database created")

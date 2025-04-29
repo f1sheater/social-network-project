@@ -64,7 +64,7 @@ for affiliations in database['Affiliations']:
     affil_list = affiliations.strip('"').split(',')
     affil_set = set(affil_list)
     for affil in affil_set:
-        if affil != "N/A":
+        if affil != "N/A" and affil != "":
             all_affiliations.append(affil)
 
 
