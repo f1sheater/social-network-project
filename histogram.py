@@ -73,7 +73,7 @@ institution_publications = Counter(all_affiliations)
 publication_counts = list(institution_publications.values())
 
 # Turn into a DataFrame
-institution_publications_df = pd.DataFrame(institution_publications.items(), columns=['Author', 'Number_of_Publications'])
+institution_publications_df = pd.DataFrame(institution_publications.items(), columns=['Affiliation', 'Number_of_Publications'])
 
 # Sort descending
 institution_publications_df = institution_publications_df.sort_values(by='Number_of_Publications', ascending=False)
@@ -90,7 +90,7 @@ plt.xlabel('Number of Publications per Institution')
 plt.ylabel('Number of Institutions')
 plt.grid(True)
 
-# Collect all keywords (concepts)
+# Collect all keywords
 all_keywords = []
 for keywords in database['Keywords']:
     keyword_list = keywords.strip("").split(',')  # Split keywords by comma
@@ -101,10 +101,10 @@ keyword_counts = Counter(all_keywords)
 keyword_publications = list(keyword_counts.values())
 
 # Turn into a DataFrame
-keyword_counts_df = pd.DataFrame(keyword_counts.items(), columns=['Author', 'Number_of_Publications'])
+keyword_counts_df = pd.DataFrame(keyword_counts.items(), columns=['Keyword', 'Count'])
 
 # Sort descending
-keyword_counts_df = keyword_counts_df.sort_values(by='Number_of_Publications', ascending=False)
+keyword_counts_df = keyword_counts_df.sort_values(by='Count', ascending=False)
 
 print(keyword_counts_df.head())
 
@@ -119,78 +119,59 @@ plt.ylabel('Number of Keywords')
 
 plt.grid(True)
 
-# Assume df is the DataFrame containing your paper data, with 'Title' and 'References' columns
-# df['Title'] contains paper titles
-# df['References'] contains a list of references (paper titles that this paper references)
 
-# Step 1: Create the Undirected Graph
-
-# Initialize an empty undirected graph
-G = nx.Graph()
+### 4)
+# Initialize an empty graph
+G = nx.DiGraph()
 counter = 0
 
 # Add nodes (papers) and edges (references between papers)
 for index, row in database.iterrows():
     id = row['Work ID']
-    print(id)
-    references = row['References'].strip('"').split(',')  # Assuming references are separated by semicolon
+    references = row['References'].strip('"').split(',')
 
     # Add the node for the paper
     if id not in G:
         counter += 1
-        print(counter)
         G.add_node(id)
 
-    # For each reference, create an undirected edge (bidirectional link)
+    # For each reference, create an edge
     id_list = list(database["Work ID"])
     for ref in references:
         if ref in id_list:
             if ref not in G:
                 G.add_node(ref)  # Ensure the referenced paper is in the graph
-            G.add_edge(id, ref)  # Paper -- Reference (undirected)
-            print("edge added")
+            G.add_edge(id, ref)  # Paper -- Reference
 
-# Step 2: Compute Global Properties
+# Compute Global Properties
 
-# Number of nodes (papers)
+# Number of nodes
 num_nodes = G.number_of_nodes()
-print(num_nodes)
 
-# Number of edges (references)
+# Number of edges
 num_edges = G.number_of_edges()
 
-
-# Diameter (longest shortest path between any two nodes)
-# The diameter is only defined for connected graphs, so we will check if the graph is connected.
-# If not, we will use the largest connected component for diameter calculation.
-if nx.is_connected(G):
-    diameter = nx.diameter(G)
-    print("if")
+# Diameter
+if nx.is_weakly_connected(G):
+    diameter = nx.diameter(G.to_undirected())
 else:
-    # Find the largest connected component and compute diameter
-    largest_component = max(nx.connected_components(G), key=len)
-    print("comp got")
-    subgraph = G.subgraph(largest_component)
-    print(f"subgraph size: {subgraph.number_of_nodes()}")
-    diameter = nx.diameter(subgraph)
-    print("else")
-print("diameter")
-print(database["Work ID"])
-print(list(database["Work ID"]))
+    largest_weak_cc = max(nx.weakly_connected_components(G), key=len)
+    subgraph = G.subgraph(largest_weak_cc)
+    diameter = nx.diameter(subgraph.to_undirected())
 
-# Clustering coefficient (average for the whole graph)
+# Clustering coefficient
 avg_clustering_coefficient = nx.average_clustering(G)
 
-# Number of connected components (subgraphs)
-num_components = nx.number_connected_components(G)
+# Number of connected components
+num_components = nx.number_connected_components(G.to_undirected())
 
-# Average degree (average number of edges per node)
+# Average degree
 avg_degree = np.mean([d for n, d in G.degree()])
 
 # Standard deviation of degrees
 std_degree = np.std([d for n, d in G.degree()])
 
-# Step 3: Compile the results in a DataFrame
+# Compile the results in a DataFrame
 graph_properties = pd.DataFrame({
     'Number of Nodes': [num_nodes],
     'Number of Edges': [num_edges],
@@ -204,6 +185,20 @@ graph_properties = pd.DataFrame({
 # Display the properties
 print(graph_properties)
 
-plt.figure(figsize=(10, 10))
-nx.draw(subgraph, with_labels=True, node_size=50, font_size=8)
+### 5)
+# Compute HITS scores
+hubs, authorities = nx.hits(G, max_iter=1000, normalized=True)
+
+# Extract hub scores
+hub_scores = list(hubs.values())
+
+# Plot a histogram of hub score distribution
+plt.figure(figsize=(8, 6))
+plt.hist(hub_scores, bins=20, color='steelblue', edgecolor='black')
+plt.xlabel("Hub Score")
+plt.ylabel("Number of Papers")
+plt.title("Histogram of Hub Scores (HITS Algorithm)")
+plt.grid(True, linestyle='--', alpha=0.5)
+plt.tight_layout()
+
 plt.show()
