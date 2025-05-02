@@ -123,25 +123,19 @@ plt.grid(True)
 ### 4)
 # Initialize an empty graph
 G = nx.DiGraph()
-counter = 0
+id_list = list(database["Work ID"])
 
 # Add nodes (papers) and edges (references between papers)
-for index, row in database.iterrows():
-    id = row['Work ID']
-    references = row['References'].strip('"').split(',')
+for i, work_id in enumerate(id_list):
+    references = database['References'][i].strip('"').split(',')
 
     # Add the node for the paper
-    if id not in G:
-        counter += 1
-        G.add_node(id)
+    G.add_node(work_id)
 
     # For each reference, create an edge
-    id_list = list(database["Work ID"])
     for ref in references:
         if ref in id_list:
-            if ref not in G:
-                G.add_node(ref)  # Ensure the referenced paper is in the graph
-            G.add_edge(id, ref)  # Paper -- Reference
+            G.add_edge(work_id, ref)  # Paper -- Reference
 
 # Compute Global Properties
 

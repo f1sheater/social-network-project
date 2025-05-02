@@ -8,7 +8,6 @@ database = pd.read_csv("water_resources_research_2020_2024.csv")
 ### 6/7)
 G = nx.Graph()
 
-all_authors = []
 author_collaborators = defaultdict(set)
 
 for authors in database['Authors']:
@@ -31,12 +30,15 @@ plt.xlabel(f"Distance from {erdos_author} (Erdős Number)")
 plt.ylabel("Number of Authors")
 plt.title(f"Erdős Number Distribution from {erdos_author}")
 plt.grid(True, linestyle='--', alpha=0.5)
+plt.savefig("erdos_histogram.png", dpi=300)
 plt.tight_layout()
 
 
 ### 8)
 subset_nodes = [author for author, dist in erdos_numbers.items() if dist in [0, 1, 2]]
 H = G.subgraph(subset_nodes)
+
+print(H)
 
 node_colors = []
 for node in H.nodes():
@@ -54,6 +56,7 @@ nx.draw_networkx_edges(H, pos, alpha=0.4)
 
 plt.title(f"Author Collaboration Network: Erdős Number 1 and 2 from '{erdos_author}'")
 plt.axis('off')
+plt.savefig("erdos_graph.png", dpi=300)
 plt.tight_layout()
 
 plt.show()

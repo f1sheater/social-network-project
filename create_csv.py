@@ -4,10 +4,6 @@ import time
 from collections import Counter
 import matplotlib.pyplot as plt
 
-def main():
-    database = create_database()
-    save_csv(database)
-
 def create_database():
     # Define the base URL and parameters
     base_url = "https://api.openalex.org/works"
@@ -39,7 +35,7 @@ def create_database():
 
     for work in results:
         title = work.get('title', '')
-        if title != None and title != "Issue Information" and title != "":
+        if title != None and title != "Issue Information" and title != "" and title not in titles:
             titles.append(work.get('title', ''))
             ids.append(work.get('id', '').split('/')[-1])
 
@@ -80,10 +76,8 @@ def create_database():
 
     return df
 
-def save_csv(data):
+def save_csv():
     # Save to CSV
-    data.to_csv('water_resources_research_2020_2024.csv', index=False)
-
-print("Creating database...")
-main()
-print("Database created")
+    print("Creating database...")
+    create_database().to_csv('water_resources_research_2020_2024.csv', index=False)
+    print("Database created")
