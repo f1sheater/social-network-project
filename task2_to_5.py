@@ -190,8 +190,8 @@ def create_paper_graph():
     print(graph_properties)
 
 
-### 5)
-def calculate_hub_scores():
+    ### 5)
+    ### calculate_hub_scores
     # Compute HITS scores
     hubs, authorities = nx.hits(G, max_iter=1000, normalized=True)
 
@@ -215,4 +215,3 @@ def compute_all():
     rank_institutions()
     rank_keywords()
     create_paper_graph()
-    calculate_hub_scores()
