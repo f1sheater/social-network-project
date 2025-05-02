@@ -6,10 +6,10 @@ import requests
 from collections import Counter
 from collections import defaultdict
 
-database = pd.read_csv("water_resources_research_2020_2024.csv")
+
 
 ### 2)
-def rank_authors():
+def rank_authors(database):
     # Split the authors and flatten the list
     all_authors = []
     author_collaborators = defaultdict(set)
@@ -64,7 +64,7 @@ def rank_authors():
     plt.show()
 
 ### 3)
-def rank_institutions():
+def rank_institutions(database):
     all_affiliations = []
     for affiliations in database['Affiliations']:
         affil_list = affiliations.strip('"').split(',')
@@ -99,7 +99,7 @@ def rank_institutions():
     print("Figure: Institution publications histogram")
     plt.show()
 
-def rank_keywords():
+def rank_keywords(database):
     # Collect all keywords
     all_keywords = []
     for keywords in database['Keywords']:
@@ -133,7 +133,7 @@ def rank_keywords():
     plt.show()
 
 ### 4)
-def create_paper_graph():
+def create_paper_graph(database):
     # Initialize an empty graph
     G = nx.DiGraph()
     id_list = list(database["Work ID"])
@@ -215,7 +215,8 @@ def create_paper_graph():
     plt.show()
 
 def compute_all():
-    rank_authors()
-    rank_institutions()
-    rank_keywords()
-    create_paper_graph()
+    database = pd.read_csv("water_resources_research_2020_2024.csv")
+    rank_authors(database)
+    rank_institutions(database)
+    rank_keywords(database)
+    create_paper_graph(database)

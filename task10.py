@@ -4,10 +4,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import powerlaw
 
-database = pd.read_csv("water_resources_research_2020_2024.csv")
-
 ### 10)
 def compute_all():
+    database = pd.read_csv("water_resources_research_2020_2024.csv")
     G = nx.Graph()
 
     for affiliations in database['Affiliations']:

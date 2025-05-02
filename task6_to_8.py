@@ -3,13 +3,13 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from collections import defaultdict
 
-database = pd.read_csv("water_resources_research_2020_2024.csv")
 erdos_author = str()
 erdos_numbers = dict()
 G = nx.Graph()
 
 ### 6/7)
 def calculate_erdos_numbers():
+    database = pd.read_csv("water_resources_research_2020_2024.csv")
     author_collaborators = defaultdict(set)
 
     for authors in database['Authors']:
