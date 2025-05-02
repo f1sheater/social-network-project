@@ -72,6 +72,7 @@ def compute_all():
     plt.ylabel("Number of Nodes")
     plt.title("Histogram of Degree of Nodes")
     plt.grid(True, linestyle='--', alpha=0.5)
+    plt.savefig("institution_degree_distribution.png", dpi=300)
     plt.tight_layout()
 
     print("Figure: Degree of institutions histogram")
@@ -98,6 +99,7 @@ def compute_all():
     plt.title("Degree Distribution with Power-Law Fit (Log-Log Scale)")
     plt.grid(True, linestyle='--', alpha=0.5)
     plt.legend()
+    plt.savefig("power_law_fit.png", dpi=300)
     plt.tight_layout()
 
     print("Figure: Power law fit")

@@ -50,6 +50,7 @@ def rank_authors():
     plt.xlabel('Number of Publications')
     plt.ylabel('Number of Authors')
     plt.grid(True)
+    plt.savefig("author_publications.png", dpi=300)
 
     plt.figure(figsize=(10,6))
     plt.hist(author_collaborators_df['Number_of_Collaborators'], bins=20, color='salmon', edgecolor='black')
@@ -57,6 +58,7 @@ def rank_authors():
     plt.xlabel('Number of Collaborators')
     plt.ylabel('Number of Authors')
     plt.grid(True)
+    plt.savefig("author_collaborators.png", dpi=300)
 
     print("Figure: Author publications and affiliations histogram")
     plt.show()
@@ -92,6 +94,7 @@ def rank_institutions():
     plt.xlabel('Number of Publications per Institution')
     plt.ylabel('Number of Institutions')
     plt.grid(True)
+    plt.savefig("institution_publications.png", dpi=300)
 
     print("Figure: Institution publications histogram")
     plt.show()
@@ -123,8 +126,8 @@ def rank_keywords():
     plt.title('Distribution of Keywords Across Articles')
     plt.xlabel('Number of Articles per Keyword')
     plt.ylabel('Number of Keywords')
-
     plt.grid(True)
+    plt.savefig("keyword_count.png", dpi=300)
 
     print("Figure: Keyword count histogram")
     plt.show()
@@ -205,6 +208,7 @@ def create_paper_graph():
     plt.ylabel("Number of Papers")
     plt.title("Histogram of Hub Scores (HITS Algorithm)")
     plt.grid(True, linestyle='--', alpha=0.5)
+    plt.savefig("hub_scores.png", dpi=300)
     plt.tight_layout()
 
     print("Figure: Hub scores histogram")
