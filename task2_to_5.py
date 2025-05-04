@@ -6,8 +6,6 @@ import requests
 from collections import Counter
 from collections import defaultdict
 
-
-
 ### 2)
 def rank_authors(database):
     # Split the authors and flatten the list
@@ -108,7 +106,9 @@ def rank_keywords(database):
 
     # Count how many times each keyword appears
     keyword_counts = Counter(all_keywords)
-    keyword_publications = list(keyword_counts.values())
+
+    # Convert keyword frequency values to a list
+    frequencies = list(keyword_counts.values())
 
     # Turn into a DataFrame
     keyword_counts_df = pd.DataFrame(keyword_counts.items(), columns=['Keyword', 'Count'])
@@ -118,19 +118,36 @@ def rank_keywords(database):
 
     print(keyword_counts_df.head())
 
-    # Plot histogram of keyword publication counts
-    plt.figure(figsize=(10,6))
-    plt.hist(keyword_publications, bins=30, color='purple', edgecolor='black')
-
-    # Titles and labels
-    plt.title('Distribution of Keywords Across Articles')
-    plt.xlabel('Number of Articles per Keyword')
-    plt.ylabel('Number of Keywords')
-    plt.grid(True)
+    # Plot histogram of these frequencies
+    plt.figure(figsize=(8, 6))
+    plt.hist(frequencies, bins=range(1, max(frequencies)+2), color='steelblue', edgecolor='black', align='left')
+    plt.xlabel("Number of Articles a Keyword Appears In")
+    plt.ylabel("Number of Keywords")
+    plt.title("Histogram of Keyword Frequencies")
+    plt.grid(True, linestyle='--', alpha=0.5)
     plt.savefig("keyword_count.png", dpi=300)
-
-    print("Figure: Keyword count histogram")
+    plt.tight_layout()
     plt.show()
+
+
+    ### OLD CODE ###
+    # # Count how many times each keyword appears
+    # keyword_counts = Counter(all_keywords)
+    # keyword_publications = list(keyword_counts.values())
+
+    # # Plot histogram of keyword publication counts
+    # plt.figure(figsize=(10,6))
+    # plt.hist(keyword_publications, bins=30, color='purple', edgecolor='black')
+
+    # # Titles and labels
+    # plt.title('Distribution of Keywords Across Articles')
+    # plt.xlabel('Number of Articles per Keyword')
+    # plt.ylabel('Number of Keywords')
+    # plt.grid(True)
+    # plt.savefig("keyword_count.png", dpi=300)
+
+    # print("Figure: Keyword count histogram")
+    # plt.show()
 
 ### 4)
 def create_paper_graph(database):
