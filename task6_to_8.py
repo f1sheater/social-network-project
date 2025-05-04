@@ -2,6 +2,7 @@ import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
 from collections import defaultdict
+import random
 
 erdos_author = str()
 erdos_numbers = dict()
@@ -53,6 +54,7 @@ def calculate_erdos_numbers():
         elif erdos_numbers[node] == 2:
             node_colors.append("lightgreen")
 
+
     plt.figure(figsize=(10, 8))
     pos = nx.spring_layout(H, seed=42)
     nx.draw_networkx_nodes(H, pos, node_color=node_colors, node_size=300, alpha=0.9)
@@ -64,6 +66,43 @@ def calculate_erdos_numbers():
     plt.tight_layout()
 
     print("Figure: Graph of authors with erdos number < 3")
+    
+
+
+    #Another representation of same graph
+
+    labels = {node: node for node in H.nodes() if erdos_numbers[node] == 0}
+    pos = {}
+    y_step = -1.5 
+    x_spacing = 22
+
+    
+    for level in [0, 1, 2]:
+        nodes_at_level = [node for node in H.nodes() if erdos_numbers[node] == level]
+        for i, node in enumerate(nodes_at_level):
+            x = i * x_spacing
+            if level == 1:
+                y = level * y_step + random.uniform(-0.2, 0.2)
+            elif level == 2:
+                y = level * y_step + random.uniform(-0.3, 0.3)
+            else:
+                y = level * y_step
+            pos[node] = (x, y)
+
+    count_1 = sum(1 for node in H.nodes() if erdos_numbers[node] == 1)
+    count_2 = sum(1 for node in H.nodes() if erdos_numbers[node] == 2)
+
+    plt.figure(figsize=(12, 6))
+    nx.draw_networkx_nodes(H, pos, node_color=node_colors, node_size=400, alpha=0.9)
+    nx.draw_networkx_edges(H, pos, alpha=0.5)
+    nx.draw_networkx_labels(H, pos, labels=labels, font_size=8, font_color='black')
+
+    plt.title(f"Author Collaboration Network: Erdős Number 1 and 2 from '{erdos_author}'")
+    plt.text(0.4, 0.6, f"Count of nodes with Erdős number 1: {count_1}", transform=plt.gca().transAxes, fontsize=10, verticalalignment='top')
+    plt.text(0.01, 0.01, f"Count of nodes with Erdős number 2: {count_2}", transform=plt.gca().transAxes, fontsize=10, verticalalignment='top')
+    plt.axis('off')
+    plt.tight_layout()
+    plt.savefig("erdos_graph2.png", dpi=300)
     plt.show()
 
 def compute_all():
