@@ -6,9 +6,7 @@ import task10
 
 def main():
     if not os.path.exists("water_resources_research_2020_2024.csv"):
-        print("Creating database...")
         create_csv.save_csv()
-        print("Database created")
 
     task2_to_5.compute_all()
     task6_to_8.compute_all()
