@@ -2,7 +2,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
-import requests
 from collections import Counter
 from collections import defaultdict
 

@@ -1,8 +1,6 @@
 import requests
 import pandas as pd
 import time
-from collections import Counter
-import matplotlib.pyplot as plt
 
 def create_database():
     # Define the base URL and parameters
